@@ -1,33 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
+import Card from './components/Card'
+import CardContainer from './containers/CardContainer'
+import { fetchCharactersWithPagination } from './getCharacters'
+
+type characterInfo = {
+  photoUrl: string;
+  name: string;
+  id: string
+}
+
+interface Character {
+  _id: string;
+  allies: string[];
+  enemies: string[];
+  photoUrl: string;
+  name: string;
+  affiliation: string;
+}
+
+const endpoint: string = "https://last-airbender-api.fly.dev/api/v1/characters";
+const perPage: number = 50;
+const page: number = 1;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [characters, setCharacters] = useState<Array<characterInfo>>([])
+
+  useEffect(() => {
+    const fetchAvatarCharacters = async () => {
+      const charactersRaw = await fetchCharactersWithPagination<Character>(endpoint, perPage, page);
+      const finalCharacters: characterInfo[] = charactersRaw.map(({_id, photoUrl, name}) => {
+        return {
+          photoUrl,
+          name,
+          id: _id,
+        }
+      })
+      setCharacters(finalCharacters);
+    }
+
+    fetchAvatarCharacters();
+
+  }, [])
+
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <CardContainer>
+        {characters.map(character => (
+          <Card src={character.photoUrl} name={character.name} id={character.id} key={character.name}/>
+        ))}
+      </CardContainer>
     </>
   )
 }
