@@ -1,22 +1,24 @@
+import { Elements } from "../constants";
+
 export {};
 
 declare global {
-
   type CardProps = {
     src: string;
     name: string;
-    id: string;
-  }
+    element: Elements;
+  };
 
   type PropsOnlyChildren = {
-    children: React.ReactNode
-  }
+    children: React.ReactNode;
+  };
 
   type characterInfo = {
     photoUrl: string;
     name: string;
-    id: string
-  }
+    element: Elements;
+    id: string;
+  };
 
   interface Character {
     _id: string;
@@ -27,4 +29,3 @@ declare global {
     affiliation: string;
   }
 }
-

@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
-import Card from '../components/Card'
-import CardContainer from '../containers/CardContainer'
-import { fetchCharacters } from '../services/getCharacters'
+import { useEffect, useState } from "react";
+import Card from "../components/Card";
+import GameBoard from "../containers/GameBoard";
+import { fetchCharacters } from "../services/getCharacters";
+import Button from "../components/Button";
+import CardSelected from "../components/CardSelected";
+import { Elements } from "../constants";
 
-
-const endpoint: string = "https://last-airbender-api.fly.dev/api/v1/characters/";
+const endpoint: string =
+  "https://last-airbender-api.fly.dev/api/v1/characters/";
 const ids = [
   "5cf5679a915ecad153ab68c9",
   "5cf5679a915ecad153ab6992",
@@ -30,43 +33,98 @@ const ids = [
   "5cf5679a915ecad153ab6952",
   "5cf5679a915ecad153ab6a8a",
   "5cf5679a915ecad153ab6908",
-]
+];
+
+const ELEMENTS_ARRAY = [
+  Elements.AIR,
+  Elements.WATER,
+  Elements.EARTH,
+  Elements.FIRE,
+];
 
 const Game = () => {
-  const [characters, setCharacters] = useState<Array<characterInfo>>([])
+  const [characters, setCharacters] = useState<Array<characterInfo>>([]);
 
   useEffect(() => {
     const fetchAvatarCharacters = async () => {
       const charactersRaw = await fetchCharacters<Character>(endpoint, ids);
-      let finalCharacters: characterInfo[] = []
-      if(charactersRaw !== undefined){
-        finalCharacters = charactersRaw.map(({_id, photoUrl, name}) => {
-          return {
-            photoUrl,
-            name,
-            id: _id,
+      let finalCharacters: characterInfo[] = [];
+      console.log(charactersRaw);
+      if (charactersRaw !== undefined) {
+        finalCharacters = charactersRaw.map(
+          ({ _id, photoUrl, name, affiliation }) => {
+            let element = null;
+            if (affiliation) {
+              const affiliationUpper = affiliation.toUpperCase();
+              for (const elementValue of ELEMENTS_ARRAY) {
+                if (affiliationUpper.includes(elementValue)) {
+                  element = elementValue;
+                  break;
+                }
+              }
+            }
+            if (element === null) {
+              element = Elements.AIR;
+            }
+            return {
+              photoUrl,
+              name,
+              element,
+              id: _id,
+            };
           }
-        })
+        );
       }
       setCharacters(finalCharacters);
-    }
+    };
 
     fetchAvatarCharacters();
-
   }, []);
 
+  const handleSelectCharacter: React.MouseEventHandler<
+    HTMLButtonElement
+  > = () => {};
 
   return (
-    <main className='w-5/6 max-w-6xl grid place-content-center m-auto h-screen'>
-      <div className='w-full h-full p-10 rounded-xl bg-yellow-800 bg-opacity-50'>
-        <CardContainer>
-          {characters.map(character => (
-            <Card src={character.photoUrl} name={character.name} id={character.id} key={character.name}/>
-          ))}
-        </CardContainer>
+    <div className="w-11/12 max-w-6xl grid m-auto place-items-center min-h-screen py-6">
+      <GameBoard>
+        {characters.map((character) => (
+          <div
+            className="w-fit h-fit p-1 bg-soft-blue rounded-lg"
+            key={character?.name}
+          >
+            <Card
+              src={character?.photoUrl}
+              name={character?.name}
+              element={character?.element}
+            />
+          </div>
+        ))}
+      </GameBoard>
+      <div className="w-full m-auto flex justify-center items-center gap-28">
+        <div className="flex flex-col justify-center items-center">
+          <p className="text-slate-950 text-lg text-center">Tu eres:</p>
+          <CardSelected
+            src={characters[0]?.photoUrl}
+            name={characters[0]?.name}
+            element={characters[0]?.element}
+            key={characters[0]?.name}
+          />
+        </div>
+        <div className="flex flex-col justify-center items-center gap-5">
+          <Button
+            onClick={handleSelectCharacter}
+            color="bg-brown text-slate-950"
+          >
+            Selecciona tu personaje
+          </Button>
+          <Button onClick={handleSelectCharacter} color="bg-red text-white">
+            Reinicia el tablero
+          </Button>
+        </div>
       </div>
-    </main>
-  )
-}
+    </div>
+  );
+};
 
-export default Game
+export default Game;

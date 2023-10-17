@@ -1,12 +1,16 @@
-const Card = ({src, name, id}: CardProps): JSX.Element => {
-  return (
-    <div className='w-full flex flex-col justify-center items-center border-4 border-sky-200 p-1 rounded-md bg-lime-800 bg-opacity-50'>
-      <div className='w-full aspect-[3/4] rounded overflow-hidden'>
-        <img src={src} alt={name} className='w-full h-full object-cover'/>
-      </div>
-      <p className='m-2 text-gray-800 text-center text-s'>{name}</p>
-    </div>
-  )
-}
+import { ELEMENT_X_COLORS } from "../constants";
 
-export default Card
+const Card = ({ src, name, element }: CardProps): JSX.Element => {
+  return (
+    <div
+      className={`w-24 h-44 flex flex-col justify-center items-center gap-2 px-1 rounded ${ELEMENT_X_COLORS[element]}`}
+    >
+      <div className="w-11/12 aspect-[3/4] rounded overflow-hidden">
+        <img src={src} alt={name} className="w-full h-full object-cover" />
+      </div>
+      <p className="text-center text-s">{name}</p>
+    </div>
+  );
+};
+
+export default Card;
