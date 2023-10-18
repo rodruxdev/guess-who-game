@@ -9,3 +9,45 @@ body {
   margin: 0;
   background-color: #bae6fd;
 }
+
+.card__front {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1),
+    -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform: rotateX(0deg);
+  transform-style: preserve-3d;
+}
+
+.card__back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  transform: rotateX(180deg);
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1),
+    -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.card {
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1),
+    -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  perspective: 1000px;
+}
+
+.card:hover .card__front {
+  transform: rotateX(-180deg);
+}
+
+.card:hover .card__back {
+  transform: rotateX(0deg);
+}
+
+.card__content {
+  -webkit-transform: translateZ(30px) scale(0.97);
+  transform: translateZ(30px) scale(0.97);
+  -webkit-perspective: inherit;
+  perspective: inherit;
+  z-index: 2;
+}

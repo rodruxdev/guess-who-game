@@ -1,4 +1,3 @@
-import React from "react";
 import { ELEMENT_X_COLORS } from "../constants";
 
 const CardSelected = ({ src, name, element }: CardProps): JSX.Element => {

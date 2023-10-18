@@ -12,7 +12,7 @@ export default {
     },
     colors: {
       "dark-blue": "#3D5BB4",
-      "soft-blue": "#C1D5F5",
+      "soft-blue": "#bae6fd",
       brown: "#C99765",
       green: "#2D735F",
       yellow: "#F0CD78",
