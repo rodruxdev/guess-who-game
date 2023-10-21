@@ -7,6 +7,9 @@ declare global {
     src: string;
     name: string;
     element: Elements;
+    characterId?: characterInfo["id"];
+    isDown?: boolean;
+    onClickCard?: (id: characterInfo["id"]) => void;
   };
 
   type PropsOnlyChildren = {
@@ -18,6 +21,7 @@ declare global {
     name: string;
     element: Elements;
     id: string;
+    isDown: boolean;
   };
 
   interface Character {

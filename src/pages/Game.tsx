@@ -42,14 +42,32 @@ const ELEMENTS_ARRAY = [
   Elements.FIRE,
 ];
 
-const Game = () => {
+const Game = (): JSX.Element => {
   const [characters, setCharacters] = useState<Array<characterInfo>>([]);
+
+  const flipDownCharacter = (id: characterInfo["id"]) => {
+    const newCharacters = [...characters];
+    const characterIndex = newCharacters.findIndex(
+      (character) => character.id === id
+    );
+    const character = newCharacters[characterIndex];
+    newCharacters[characterIndex] = { ...character, isDown: !character.isDown };
+    setCharacters(newCharacters);
+  };
+
+  const resetCharacters: React.MouseEventHandler<HTMLButtonElement> = () => {
+    const newCharacters = characters.map((character) => ({
+      ...character,
+      isDown: false,
+    }));
+    setCharacters(newCharacters);
+  };
 
   useEffect(() => {
     const fetchAvatarCharacters = async () => {
       const charactersRaw = await fetchCharacters<Character>(endpoint, ids);
       let finalCharacters: characterInfo[] = [];
-      console.log(charactersRaw);
+      // console.log(charactersRaw);
       if (charactersRaw !== undefined) {
         finalCharacters = charactersRaw.map(
           ({ _id, photoUrl, name, affiliation }) => {
@@ -70,6 +88,7 @@ const Game = () => {
               photoUrl,
               name,
               element,
+              isDown: false,
               id: _id,
             };
           }
@@ -97,6 +116,9 @@ const Game = () => {
               src={character?.photoUrl}
               name={character?.name}
               element={character?.element}
+              characterId={character?.id}
+              isDown={character?.isDown}
+              onClickCard={flipDownCharacter}
             />
           </div>
         ))}
@@ -118,7 +140,7 @@ const Game = () => {
           >
             Selecciona tu personaje
           </Button>
-          <Button onClick={handleSelectCharacter} color="bg-red text-white">
+          <Button onClick={resetCharacters} color="bg-red text-white">
             Reinicia el tablero
           </Button>
         </div>
