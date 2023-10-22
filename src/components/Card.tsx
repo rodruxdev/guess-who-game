@@ -1,5 +1,6 @@
 import { MouseEventHandler } from "react";
 import { ELEMENT_X_COLORS } from "../constants";
+import logo from "/logo-avatar.svg";
 
 const Card = ({
   src,
@@ -32,7 +33,7 @@ const Card = ({
         }`}
       >
         <div className="w-4/5 card__content">
-          <img src="/logo-avatar.svg" alt="" />
+          <img src={logo} alt="" />
         </div>
       </div>
     </button>
