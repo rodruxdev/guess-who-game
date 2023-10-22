@@ -134,7 +134,7 @@ const Game = (): JSX.Element => {
           </div>
         ))}
       </GameBoard>
-      <div className="w-full m-auto flex flex-col sm:flex-row justify-center items-center gap-10 lg:gap-28">
+      <div className="w-full m-auto flex flex-col sm:flex-row justify-center items-center gap-10 lg:gap-28 row-start-1 row-end-2 md:row-start-2 lg:row-end-3 mb-10 lg:mb-0">
         <div className="flex flex-col justify-center items-center">
           <p className="text-slate-950 text-lg text-center">Tu eres:</p>
           {selectedCharacter ? (
