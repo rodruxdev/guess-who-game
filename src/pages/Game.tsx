@@ -11,6 +11,7 @@ import {
   Elements,
   GAME_STATES,
 } from "../constants";
+import EmptyCardSelected from "../components/EmptyCardSelected";
 
 const Game = (): JSX.Element => {
   const [characters, setCharacters] = useState<Array<characterInfo>>([]);
@@ -143,7 +144,7 @@ const Game = (): JSX.Element => {
               element={selectedCharacter?.element}
             />
           ) : (
-            <div></div>
+            <EmptyCardSelected />
           )}
         </div>
         <div className="flex flex-col justify-center items-center gap-5">
