@@ -4,46 +4,21 @@ import GameBoard from "../containers/GameBoard";
 import { fetchCharacters } from "../services/getCharacters";
 import Button from "../components/Button";
 import CardSelected from "../components/CardSelected";
-import { Elements } from "../constants";
-
-const endpoint: string =
-  "https://last-airbender-api.fly.dev/api/v1/characters/";
-const ids = [
-  "5cf5679a915ecad153ab68c9",
-  "5cf5679a915ecad153ab6992",
-  "5cf5679a915ecad153ab6a45",
-  "5cf5679a915ecad153ab6ab6",
-  "5cf5679a915ecad153ab6a70",
-  "5cf5679a915ecad153ab6976",
-  "5cf5679a915ecad153ab68da",
-  "5cf5679a915ecad153ab68d3",
-  "5cf5679a915ecad153ab69dd",
-  "5cf5679a915ecad153ab6a54",
-  "5cf5679a915ecad153ab69fe",
-  "5cf5679a915ecad153ab69c7",
-  "5cf5679a915ecad153ab6a7a",
-  "5cf5679a915ecad153ab697f",
-  "5cf5679a915ecad153ab68f2",
-  "5cf5679a915ecad153ab69ac",
-  "5cf5679a915ecad153ab6aac",
-  "5cf5679a915ecad153ab6a25",
-  "5cf5679a915ecad153ab6954",
-  "5cf5679a915ecad153ab6990",
-  "5cf5679a915ecad153ab6a06",
-  "5cf5679a915ecad153ab6952",
-  "5cf5679a915ecad153ab6a8a",
-  "5cf5679a915ecad153ab6908",
-];
-
-const ELEMENTS_ARRAY = [
-  Elements.AIR,
-  Elements.WATER,
-  Elements.EARTH,
-  Elements.FIRE,
-];
+import {
+  CHARACTER_IDS,
+  ELEMENTS_ARRAY,
+  ENDPOINT,
+  Elements,
+  GAME_STATES,
+} from "../constants";
 
 const Game = (): JSX.Element => {
   const [characters, setCharacters] = useState<Array<characterInfo>>([]);
+  const [selectedCharacter, setSelectedCharacter] =
+    useState<characterInfo | null>(null);
+  const [gameState, setGameState] = useState<GAME_STATES>(
+    GAME_STATES.SELECT_CHARACTER
+  );
 
   const flipDownCharacter = (id: characterInfo["id"]) => {
     const newCharacters = [...characters];
@@ -55,7 +30,15 @@ const Game = (): JSX.Element => {
     setCharacters(newCharacters);
   };
 
-  const resetCharacters: React.MouseEventHandler<HTMLButtonElement> = () => {
+  const selectCharacter = (id: characterInfo["id"]) => {
+    const characterIndex = characters.findIndex(
+      (character) => character.id === id
+    );
+    const newSelectedCharacter = characters[characterIndex];
+    setSelectedCharacter(newSelectedCharacter);
+  };
+
+  const resetCharacters = () => {
     const newCharacters = characters.map((character) => ({
       ...character,
       isDown: false,
@@ -63,9 +46,32 @@ const Game = (): JSX.Element => {
     setCharacters(newCharacters);
   };
 
+  const resetBoard: React.MouseEventHandler<HTMLButtonElement> = () => {
+    resetCharacters();
+  };
+
+  const restartGame = () => {
+    setGameState(GAME_STATES.SELECT_CHARACTER);
+    setSelectedCharacter(null);
+    resetCharacters();
+  };
+
+  const isSelectingCharacter = gameState === GAME_STATES.SELECT_CHARACTER;
+
+  const changeGameState: React.MouseEventHandler<HTMLButtonElement> = () => {
+    if (isSelectingCharacter && selectedCharacter !== null) {
+      setGameState(GAME_STATES.PLAYING);
+    } else if (gameState === GAME_STATES.PLAYING) {
+      restartGame();
+    }
+  };
+
   useEffect(() => {
     const fetchAvatarCharacters = async () => {
-      const charactersRaw = await fetchCharacters<Character>(endpoint, ids);
+      const charactersRaw = await fetchCharacters<Character>(
+        ENDPOINT,
+        CHARACTER_IDS
+      );
       let finalCharacters: characterInfo[] = [];
       // console.log(charactersRaw);
       if (charactersRaw !== undefined) {
@@ -100,13 +106,15 @@ const Game = (): JSX.Element => {
     fetchAvatarCharacters();
   }, []);
 
-  const handleSelectCharacter: React.MouseEventHandler<
-    HTMLButtonElement
-  > = () => {};
-
   return (
     <div className="w-11/12 max-w-6xl grid m-auto place-items-center min-h-screen py-6">
-      <GameBoard>
+      <GameBoard
+        title={
+          isSelectingCharacter
+            ? "SELECCIONA TU PERSONAJE:"
+            : "ADIVINA QUIÉN? - AVATAR EL ÚLTIMO MAESTRO DEL AIRE"
+        }
+      >
         {characters.map((character) => (
           <div
             className="w-fit h-fit p-1 bg-soft-blue rounded-lg"
@@ -118,7 +126,9 @@ const Game = (): JSX.Element => {
               element={character?.element}
               characterId={character?.id}
               isDown={character?.isDown}
-              onClickCard={flipDownCharacter}
+              onClickCard={
+                isSelectingCharacter ? selectCharacter : flipDownCharacter
+              }
             />
           </div>
         ))}
@@ -126,21 +136,27 @@ const Game = (): JSX.Element => {
       <div className="w-full m-auto flex justify-center items-center gap-28">
         <div className="flex flex-col justify-center items-center">
           <p className="text-slate-950 text-lg text-center">Tu eres:</p>
-          <CardSelected
-            src={characters[0]?.photoUrl}
-            name={characters[0]?.name}
-            element={characters[0]?.element}
-            key={characters[0]?.name}
-          />
+          {selectedCharacter ? (
+            <CardSelected
+              src={selectedCharacter?.photoUrl}
+              name={selectedCharacter?.name}
+              element={selectedCharacter?.element}
+            />
+          ) : (
+            <div></div>
+          )}
         </div>
         <div className="flex flex-col justify-center items-center gap-5">
           <Button
-            onClick={handleSelectCharacter}
+            onClick={changeGameState}
             color="bg-brown text-slate-950"
+            disabled={selectedCharacter === null}
           >
-            Selecciona tu personaje
+            {isSelectingCharacter
+              ? "Inicia el juego"
+              : "Selecciona tu personaje"}
           </Button>
-          <Button onClick={resetCharacters} color="bg-red text-white">
+          <Button onClick={resetBoard} color="bg-red text-white">
             Reinicia el tablero
           </Button>
         </div>
